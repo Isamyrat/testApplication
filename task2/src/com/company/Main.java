@@ -7,7 +7,8 @@ import java.util.*;
 
 public class Main {
 
-    public static  List<Integer> numbers = new ArrayList<>();
+    public static List<Integer> numbers = new ArrayList<>();
+
     public static void main(String[] args) {
 
         firstTask();
@@ -16,7 +17,7 @@ public class Main {
 
         String tmp = secondTask();
 
-        if(!thirdTask(tmp, sum)){
+        if (!thirdTask(tmp, sum)) {
             System.out.println("The first number was be 1!!!");
             System.out.println("The last number was be 2!!!");
             System.out.println("The count of elements was be " + sum + "!!!");
@@ -25,7 +26,7 @@ public class Main {
 
     }
 
-    public static void firstTask(){
+    public static void firstTask() {
         String value = null;
 
         try (BufferedReader reader = Files.newBufferedReader(Paths.get("prince.txt"))) {
@@ -40,7 +41,8 @@ public class Main {
             numbers.add(Integer.valueOf(a));
         }
     }
-    public static String  secondTask() {
+
+    public static String secondTask() {
         StringBuilder sb = new StringBuilder();
         try (BufferedReader reader = Files.newBufferedReader(Paths.get("prince.txt"))) {
             String line;
@@ -54,33 +56,107 @@ public class Main {
         }
         String ss = sb.toString();
 
-        String tmp = ss.replaceAll("\\s+", "");
-        return tmp;
+        return ss.replaceAll("\\s+", "");
     }
 
     public static Boolean thirdTask(String tmp, Integer sum) {
         char[] chars = tmp.toCharArray();
 
-        if(chars[3] != '1'){
-            return false;
+
+        for (int i = 1; i < chars.length; i++) {
+            chars[i - 1] = chars[i];
+            chars[i] = 0;
         }
-        if(chars[chars.length-1] != '2'){
-            return false;
+        for (int i = 1; i < chars.length; i++) {
+            chars[i - 1] = chars[i];
+            chars[i] = 0;
+        }
+        for (int i = 1; i < chars.length; i++) {
+            chars[i - 1] = chars[i];
+            chars[i] = 0;
         }
 
-        chars[0] = 0; chars[1] = 0; chars[2]=0;
-        int opo = chars.length-1;
-        if(chars.length-3 != sum){
-            return false;
+        char[] chars1 = new char[chars.length - 3];
+
+        for (int i = 0; i < chars.length - 3; i++) {
+            chars1[i] = chars[i];
         }
 
-        int flag =0;
-        for (Character character : chars) {
-            if(character.equals('.')){
-                flag++;
-            }
+        if (chars1[0] != '1') {
+            return false;
         }
-        System.out.println("Prince need "  + flag*5 + " for find princess!!!");
+        if (chars1[chars1.length - 1] != '2') {
+            return false;
+        }
+        if (chars1.length != sum) {
+            return false;
+        }
+        int steps = numbers.get(1) * numbers.get(2);
+
+        int flag = 0;
+
+        int i = 0;
+
+        while (i < chars1.length) {
+            int count = 0, count1, t = 1;
+            if (chars1[i] == '1' || chars1[i] == '.' || chars1[i] == '2') {
+                if ((i + steps) < chars1.length) {
+                    if (chars1[i + steps] == '.') {
+                        int k = 1;
+
+                        while (true) {
+                            if ((i + steps + t) % steps != 0) {
+                                t++;
+                                count++;
+                            } else break;
+                        }
+                        count1 = count;
+
+                        while (k <= count) {
+                            if (i + steps + k <= sum) {
+                                if (chars1[i + steps + k] == '.') {
+                                    flag++;
+                                    i = i + steps;
+                                    break;
+                                } else if (chars1[i + steps + k] == '0') {
+                                    if (k == count1) {
+                                        i = i + k;
+                                        flag++;
+                                        break;
+                                    } else k++;
+                                } else if (chars1[i + steps + k] == '2') {
+                                    i = i + steps;
+                                    flag++;
+                                    break;
+
+                                }
+                            } else {
+                                flag++;
+                                i = i + steps;
+                                break;
+                            }
+                        }
+
+                    } else if (chars1[i + steps] == '2') {
+                        i = i + steps;
+                        flag++;
+                    }else {
+                        i++;
+                        flag++;
+                    }
+                } else if (chars1[i] == '2') {
+                    flag++;
+                    break;
+                } else {
+                    i++;
+                    flag++;
+                }
+            } else i++;
+        }
+
+        System.out.println("Prince need "  + (flag - 1) + " moves for find princess!!!");
+        System.out.println();
+        System.out.println("Prince need "  + (flag - 1) * 5 + " seconds for find princess!!!");
         return true;
     }
 
